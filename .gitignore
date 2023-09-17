@@ -1,0 +1,7 @@
+*pycache*
+
+deployment/.terraform*
+
+.DS_Store
+*/dask-worker-space/*
+files/*

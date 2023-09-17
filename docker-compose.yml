@@ -1,0 +1,102 @@
+version: "3.3"
+
+services:
+  api:
+    image: api
+    build: ./api
+    command: uvicorn app.api:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - FILES_PATH=/files
+      - REDIS_DOMAIN=redis
+      - REDIS_PASSWORD=redis
+      - DASK_DOMAIN=dask-scheduler
+      - DASK_PORT=8786
+    volumes:
+      - ./api/:/app/
+      - ./files:/files
+    ports:
+      - 8002:8000
+    depends_on:
+      - redis
+      - scheduler
+      - worker
+
+  redis:
+    image: bitnami/redis:latest
+    hostname: redis
+    environment:
+      - REDIS_PASSWORD=redis
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+
+  scheduler:
+    image: scheduler
+    build: ./dask
+    hostname: dask-scheduler
+    environment:
+      - FILES_PATH=/files
+      - REDIS_DOMAIN=redis
+      - REDIS_PASSWORD=redis
+    depends_on:
+      - redis
+    ports:
+      - 8786:8786
+      - 8787:8787
+    command: ["dask-scheduler"]
+
+  worker:
+    image: worker
+    build:
+      context: .
+      dockerfile: ./dask-worker/Dockerfile
+    depends_on:
+      - scheduler
+      - redis
+    environment:
+      - FILES_PATH=/files
+      - REDIS_DOMAIN=redis
+      - REDIS_PASSWORD=redis
+    volumes:
+      - ./api/:/app/
+      - ./files:/files
+    command: ["dask-worker", "tcp://dask-scheduler:8786"]
+
+  deployer:
+    image: deployer
+    build: ./dask-awsdeploy
+    # this compose section is just for building the
+    # dask aws deployment code
+    profiles:
+      - donotstart
+    environment:
+      - FILES_PATH=/files
+      - REDIS_DOMAIN=redis
+      - REDIS_PASSWORD=redis
+
+  # celery-beat:
+  #     build: ./tasks
+  #     volumes:
+  #         - ./tasks:/app
+  #         - ./files:/files
+  #     entrypoint: celery -A task beat --loglevel=info
+  #     environment:
+  #         - FILES_PATH=/files
+  #         - REDIS_DOMAIN=redis
+  #         - REDIS_PASSWORD=redis
+  #     # depends_on:
+  #     #     - api
+
+  # celery-worker:
+  #     build: ./tasks
+  #     volumes:
+  #         - ./tasks:/app
+  #         - ./files:/files
+  #     entrypoint: celery -A task worker --loglevel=info
+  #     environment:
+  #         - FILES_PATH=/files
+  #         - REDIS_DOMAIN=redis
+  #         - REDIS_PASSWORD=redis
+  #     depends_on:
+  #         - celery-beat
