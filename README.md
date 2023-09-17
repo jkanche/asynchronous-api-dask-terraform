@@ -6,6 +6,8 @@
 
 If you've answered "yes" to any of these questions, you've come to the right place! This repository demonstrates a simple usecase to compute [fibonacci](https://examples.dask.org/applications/async-web-server.html) & provides infrastructure and deployment scripts for AWS. These resources not only facilitate the setup of a Dask cluster but also adapts the cluster seamlessly to varying workloads. Additionally, it allows you to make these services accessible through FastAPI.
 
+It's important to note that this repository primarily functions as a template. While it strives to provide structure and streamline development, deploying it may pose challenges, particularly in terms of learning Terraform and delving into the intricacies of [deployment scripts](./deployment).
+
 ## Developers and Deployment
 
 This system relies on an AWS Fargate cluster, entirely orchestrated using [Terraform](https://www.terraform.io/) and eliminates the need for manual configurations. It leverages AWS's Fargate offering and spot instances to enable on-demand scaling.
