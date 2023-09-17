@@ -8,7 +8,7 @@ If you've answered "yes" to any of these questions, you've come to the right pla
 
 It's important to note that this repository primarily functions as a template. While it strives to provide structure and streamline development, deploying it may pose challenges, particularly in terms of learning Terraform and delving into the intricacies of [deployment scripts](./deployment).
 
-## Developers and Deployment
+## Deployment
 
 This system relies on an AWS Fargate cluster, entirely orchestrated using [Terraform](https://www.terraform.io/) and eliminates the need for manual configurations. It leverages AWS's Fargate offering and spot instances to enable on-demand scaling.
 
@@ -44,9 +44,10 @@ To achieve this:
 
   ***While it's possible to achieve even greater speed and scalability with a more generous budget ($$$), the system currently limits the scaling to 100 dask workers.***
 
-- **Cache layer**: This component plays a pivotal role in storing results for all processed requests. The cache system also ensures that results aren't recomputed for identical requests, tying back to the discussion of systematically generating `task_id`s based on query parameters.
+### **Cache layer**
+This component plays a pivotal role in storing results for all processed requests. The cache system also ensures that results aren't recomputed for identical requests, tying back to the discussion of systematically generating `task_id`s based on query parameters.
 
-### local development
+## Local development
 
 For local development, follow these steps:
 
